@@ -1,4 +1,8 @@
 #!/bin/bash
+TMP_SCRIPT="/tmp/proxy_setup_temp.sh"
+
+cat > $TMP_SCRIPT << 'EOL'
+#!/bin/bash
 
 parse_proxy() {
     local input=$1
@@ -17,17 +21,17 @@ parse_proxy() {
 setup_system_proxy() {
     local proxy_url=$1
     
-    sudo tee /etc/profile.d/proxy.sh > /dev/null << EOL
+    sudo tee /etc/profile.d/proxy.sh > /dev/null << EOF
 export http_proxy="${proxy_url}"
 export https_proxy="${proxy_url}"
 export ftp_proxy="${proxy_url}"
 export no_proxy="localhost,127.0.0.1"
-EOL
+EOF
 
-    sudo tee /etc/apt/apt.conf.d/80proxy > /dev/null << EOL
+    sudo tee /etc/apt/apt.conf.d/80proxy > /dev/null << EOF
 Acquire::http::Proxy "${proxy_url}";
 Acquire::https::Proxy "${proxy_url}";
-EOL
+EOF
 
     export http_proxy="${proxy_url}"
     export https_proxy="${proxy_url}"
@@ -38,7 +42,6 @@ EOL
     echo "IP hiện tại: $(curl -s ifconfig.me)"
 }
 
-exec < /dev/tty
 echo -n "Vui lòng nhập proxy (định dạng ip:port hoặc ip:port:user:password): "
 read proxy_input
 
@@ -55,3 +58,8 @@ else
     echo "Lỗi: Không thể kết nối proxy"
     exit 1
 fi
+EOL
+
+chmod +x $TMP_SCRIPT
+$TMP_SCRIPT
+rm $TMP_SCRIPT
