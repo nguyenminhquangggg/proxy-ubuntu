@@ -16,14 +16,8 @@ curl -s https://api.ipify.org
 Để áp dụng proxy trên ubuntu, sử dụng lệnh
 
 ```
-wget -qO- https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/heads/main/input.sh | sudo bash
+wget -O proxy.sh https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/heads/main/proxy.sh && chmod +x proxy.sh && sudo ./proxy.sh
 ```
-
-
-```
-curl -s https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/heads/main/proxy.sh | sudo bash
-```
-
 
 
 Sau khi tạo máy ảo trên promox, hãy chạy lệnh này để có thể đăng nhập từ bên ngoài, thay vì promox
