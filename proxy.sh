@@ -35,9 +35,16 @@ EOL
     export no_proxy="localhost,127.0.0.1"
 
     echo "Proxy đã được thiết lập!"
+    echo "IP hiện tại: $(curl -s ifconfig.me)"
 }
 
-read -p "Nhập proxy (định dạng ip:port hoặc ip:port:user:password): " proxy_input
+echo -n "Vui lòng nhập proxy (định dạng ip:port hoặc ip:port:user:password): "
+read proxy_input
+
+if [ -z "$proxy_input" ]; then
+    echo "Lỗi: Proxy không được để trống"
+    exit 1
+fi
 
 proxy_url=$(parse_proxy "$proxy_input")
 
