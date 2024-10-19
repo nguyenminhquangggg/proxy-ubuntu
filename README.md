@@ -11,5 +11,5 @@ curl -s https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/h
 Sử dụng lệnh này trước và sau để so sánh IP:
 
 ```
-curl -s https://api.ipify.org || curl -s ifconfig.me || curl -s icanhazip.com
+curl -s https://api.ipify.org
 ```
