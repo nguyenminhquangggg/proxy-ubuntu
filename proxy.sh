@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Tạo script tạm thời
+cat > /tmp/setup_proxy.sh << 'EOF'
+#!/bin/bash
+
 parse_proxy() {
     local input=$1
     local proxy_url
@@ -17,17 +21,17 @@ parse_proxy() {
 setup_system_proxy() {
     local proxy_url=$1
     
-    sudo tee /etc/profile.d/proxy.sh > /dev/null << EOF
+    sudo tee /etc/profile.d/proxy.sh > /dev/null << EOFX
 export http_proxy="${proxy_url}"
 export https_proxy="${proxy_url}"
 export ftp_proxy="${proxy_url}"
 export no_proxy="localhost,127.0.0.1"
-EOF
+EOFX
 
-    sudo tee /etc/apt/apt.conf.d/80proxy > /dev/null << EOF
+    sudo tee /etc/apt/apt.conf.d/80proxy > /dev/null << EOFX
 Acquire::http::Proxy "${proxy_url}";
 Acquire::https::Proxy "${proxy_url}";
-EOF
+EOFX
 
     export http_proxy="${proxy_url}"
     export https_proxy="${proxy_url}"
@@ -38,7 +42,13 @@ EOF
     echo "IP hiện tại: $(curl -s ifconfig.me)"
 }
 
-proxy_input=$(cat /tmp/proxy_input.txt)
+read -p "Vui lòng nhập proxy (định dạng ip:port hoặc ip:port:user:password): " proxy_input
+
+if [ -z "$proxy_input" ]; then
+    echo "Lỗi: Proxy không được để trống"
+    exit 1
+fi
+
 proxy_url=$(parse_proxy "$proxy_input")
 
 if curl --proxy "$proxy_url" -s https://www.google.com > /dev/null; then
@@ -47,3 +57,9 @@ else
     echo "Lỗi: Không thể kết nối proxy"
     exit 1
 fi
+EOF
+
+# Tải xuống và chạy
+chmod +x /tmp/setup_proxy.sh
+bash /tmp/setup_proxy.sh
+rm /tmp/setup_proxy.sh
