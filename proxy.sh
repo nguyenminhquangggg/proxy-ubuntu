@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Tải script và lưu vào file tạm thời
-SCRIPT_PATH="/tmp/proxy_setup.sh"
-
-cat > $SCRIPT_PATH << 'EOL'
-#!/bin/bash
-
 parse_proxy() {
     local input=$1
     local proxy_url
@@ -44,14 +38,7 @@ EOF
     echo "IP hiện tại: $(curl -s ifconfig.me)"
 }
 
-proxy_input=""
-while [ -z "$proxy_input" ]; do
-    read -p "Vui lòng nhập proxy (định dạng ip:port hoặc ip:port:user:password): " proxy_input
-    if [ -z "$proxy_input" ]; then
-        echo "Proxy không được để trống. Vui lòng nhập lại."
-    fi
-done
-
+proxy_input=$(cat /tmp/proxy_input.txt)
 proxy_url=$(parse_proxy "$proxy_input")
 
 if curl --proxy "$proxy_url" -s https://www.google.com > /dev/null; then
@@ -60,8 +47,3 @@ else
     echo "Lỗi: Không thể kết nối proxy"
     exit 1
 fi
-EOL
-
-chmod +x $SCRIPT_PATH
-/bin/bash $SCRIPT_PATH
-rm $SCRIPT_PATH
