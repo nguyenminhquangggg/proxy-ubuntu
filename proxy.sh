@@ -1,21 +1,49 @@
 #!/bin/bash
 
-# Nhập thông tin proxy từ người dùng
-read -p "Enter Proxy (vd: http://username:password@proxy-server:port): " PROXY
+parse_proxy() {
+    local input=$1
+    local proxy_url
+    
+    IFS=':' read -r ip port user pass <<< "$input"
+    
+    if [ -z "$user" ]; then
+        proxy_url="http://${ip}:${port}"
+    else
+        proxy_url="http://${user}:${pass}@${ip}:${port}"
+    fi
+    echo "$proxy_url"
+}
 
-# Thiết lập proxy cho APT
-echo "Thiết lập proxy cho APT..."
-echo "Acquire::http::Proxy \"$PROXY/\";" | sudo tee /etc/apt/apt.conf.d/99proxy > /dev/null
-echo "Acquire::https::Proxy \"$PROXY/\";" | sudo tee -a /etc/apt/apt.conf.d/99proxy > /dev/null
+setup_system_proxy() {
+    local proxy_url=$1
+    
+    sudo tee /etc/profile.d/proxy.sh > /dev/null << EOL
+export http_proxy="${proxy_url}"
+export https_proxy="${proxy_url}"
+export ftp_proxy="${proxy_url}"
+export no_proxy="localhost,127.0.0.1"
+EOL
 
-# Thiết lập biến môi trường cho toàn hệ thống
-echo "Thiết lập biến môi trường cho toàn hệ thống..."
-echo "export http_proxy=\"$PROXY\"" | sudo tee /etc/profile.d/proxy.sh > /dev/null
-echo "export https_proxy=\"$PROXY\"" | sudo tee -a /etc/profile.d/proxy.sh > /dev/null
-echo "export ftp_proxy=\"$PROXY\"" | sudo tee -a /etc/profile.d/proxy.sh > /dev/null
+    sudo tee /etc/apt/apt.conf.d/80proxy > /dev/null << EOL
+Acquire::http::Proxy "${proxy_url}";
+Acquire::https::Proxy "${proxy_url}";
+EOL
 
-# Cấp quyền thực thi cho tệp proxy.sh
-sudo chmod +x /etc/profile.d/proxy.sh
+    export http_proxy="${proxy_url}"
+    export https_proxy="${proxy_url}"
+    export ftp_proxy="${proxy_url}"
+    export no_proxy="localhost,127.0.0.1"
 
-# Thông báo hoàn tất
-echo "Đã thiết lập proxy cho toàn hệ thống. Vui lòng khởi động lại hoặc đăng nhập lại để áp dụng thay đổi."
+    echo "Proxy đã được thiết lập!"
+}
+
+read -p "Nhập proxy (định dạng ip:port hoặc ip:port:user:password): " proxy_input
+
+proxy_url=$(parse_proxy "$proxy_input")
+
+if curl --proxy "$proxy_url" -s https://www.google.com > /dev/null; then
+    setup_system_proxy "$proxy_url"
+else
+    echo "Lỗi: Không thể kết nối proxy"
+    exit 1
+fi
