@@ -20,3 +20,13 @@ Sau khi tạo máy ảo trên promox, hãy chạy lệnh này để có thể đ
 ```
 sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 ```
+
+#Cài Đặt các thư viện cần thiết
+
+```
+# install dependencies, if needed
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl git wget htop tmux build-essential jq make lz4 gcc unzip -y
+```
+
+
