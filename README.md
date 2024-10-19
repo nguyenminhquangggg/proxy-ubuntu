@@ -18,7 +18,7 @@ curl -s https://api.ipify.org
 ```
 wget -qO- https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/heads/main/proxy.sh | sudo bash
 ```
-Hoặc 
+
 
 ```
 curl -s https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/heads/main/proxy.sh | sudo bash
