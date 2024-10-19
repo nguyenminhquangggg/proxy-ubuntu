@@ -38,6 +38,7 @@ EOL
     echo "IP hiện tại: $(curl -s ifconfig.me)"
 }
 
+exec < /dev/tty
 echo -n "Vui lòng nhập proxy (định dạng ip:port hoặc ip:port:user:password): "
 read proxy_input
 
