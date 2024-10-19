@@ -16,7 +16,7 @@ curl -s https://api.ipify.org
 Để áp dụng proxy trên ubuntu, sử dụng lệnh
 
 ```
-wget -qO- https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/heads/main/proxy.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/nguyenminhquangggg/proxy-ubuntu/refs/heads/main/input.sh | sudo bash
 ```
 
 
