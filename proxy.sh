@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Tạo script tạm thời
-cat > /tmp/proxy_script.sh << 'EOF'
+# Tải script và lưu vào file tạm thời
+SCRIPT_PATH="/tmp/proxy_setup.sh"
+
+cat > $SCRIPT_PATH << 'EOL'
 #!/bin/bash
 
 parse_proxy() {
@@ -21,17 +23,17 @@ parse_proxy() {
 setup_system_proxy() {
     local proxy_url=$1
     
-    sudo tee /etc/profile.d/proxy.sh > /dev/null << EOFF
+    sudo tee /etc/profile.d/proxy.sh > /dev/null << EOF
 export http_proxy="${proxy_url}"
 export https_proxy="${proxy_url}"
 export ftp_proxy="${proxy_url}"
 export no_proxy="localhost,127.0.0.1"
-EOFF
+EOF
 
-    sudo tee /etc/apt/apt.conf.d/80proxy > /dev/null << EOFF
+    sudo tee /etc/apt/apt.conf.d/80proxy > /dev/null << EOF
 Acquire::http::Proxy "${proxy_url}";
 Acquire::https::Proxy "${proxy_url}";
-EOFF
+EOF
 
     export http_proxy="${proxy_url}"
     export https_proxy="${proxy_url}"
@@ -42,12 +44,13 @@ EOFF
     echo "IP hiện tại: $(curl -s ifconfig.me)"
 }
 
-read -p "Vui lòng nhập proxy (định dạng ip:port hoặc ip:port:user:password): " proxy_input
-
-if [ -z "$proxy_input" ]; then
-    echo "Lỗi: Proxy không được để trống"
-    exit 1
-fi
+proxy_input=""
+while [ -z "$proxy_input" ]; do
+    read -p "Vui lòng nhập proxy (định dạng ip:port hoặc ip:port:user:password): " proxy_input
+    if [ -z "$proxy_input" ]; then
+        echo "Proxy không được để trống. Vui lòng nhập lại."
+    fi
+done
 
 proxy_url=$(parse_proxy "$proxy_input")
 
@@ -57,9 +60,8 @@ else
     echo "Lỗi: Không thể kết nối proxy"
     exit 1
 fi
-EOF
+EOL
 
-# Cấp quyền và chạy script
-chmod +x /tmp/proxy_script.sh
-bash /tmp/proxy_script.sh
-rm /tmp/proxy_script.sh
+chmod +x $SCRIPT_PATH
+/bin/bash $SCRIPT_PATH
+rm $SCRIPT_PATH
